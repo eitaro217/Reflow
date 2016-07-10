@@ -109,7 +109,6 @@ void tempratureRead() {
   unsigned int thermocouple;
   unsigned int internal;
   float disp;
-  errorStatus = 0;
 
 #if THERMO_CHIP==MAX6675  //MAX6675
   // 連続で読み込むとちゃんと読まないので対策。2回に一回読み込み
@@ -124,6 +123,7 @@ void tempratureRead() {
     if ((thermocouple & 0x0004) != 0) {
       errorStatus = 0xFF;
     } else {
+      errorStatus = 0;
       temperature = (thermocouple >> 3) * 0.25;
     }
   }
@@ -134,7 +134,7 @@ void tempratureRead() {
   thermocouple = (unsigned int)SPI.transfer16(0x0000);
   internal = (unsigned int)SPI.transfer16(0x0000);
   digitalWrite(TemperatureSlavePin, HIGH);
-
+  errorStatus = 0;
   if ((thermocouple & 0x0001) != 0) {
     if ((internal & 0x0004) != 0) {
       errorStatus |= B00000001; // Short to Vcc
