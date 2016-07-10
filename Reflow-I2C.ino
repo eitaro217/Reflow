@@ -121,7 +121,7 @@ void tempratureRead() {
     digitalWrite(TemperatureSlavePin, HIGH);
 
     if ((thermocouple & 0x0004) != 0) {
-      errorStatus = 0xFF;
+      errorStatus = B10000000;
     } else {
       errorStatus = 0;
       temperature = (thermocouple >> 3) * 0.25;
