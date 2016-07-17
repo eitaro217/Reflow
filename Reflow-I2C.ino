@@ -1,3 +1,8 @@
+/*
+ *  use Swiches http://n.mtng.org/ele/arduino/switches.html
+ *  use u8glib  https://github.com/olikraus/U8glib_Arduino
+ */
+
 #define MAX6675 1
 #define MAX31855 2
 
@@ -18,7 +23,7 @@ int temperature_control_data[ControlDataLen + 1][3] = {
 
 #include <SPI.h>
 #include <Switches.h> // switch control
-#include "U8glib.h"
+#include <U8glib.h>     // LCD Lib.
 
 // setup u8g object, please remove comment from one of the following constructor calls
 // IMPORTANT NOTE: The following list is incomplete. The complete list of supported
@@ -134,8 +139,8 @@ void tempratureRead() {
   thermocouple = (unsigned int)SPI.transfer16(0x0000);
   internal = (unsigned int)SPI.transfer16(0x0000);
   digitalWrite(TemperatureSlavePin, HIGH);
-  errorStatus = 0;
   if ((thermocouple & 0x0001) != 0) {
+    errorStatus = B10000000;
     if ((internal & 0x0004) != 0) {
       errorStatus |= B00000001; // Short to Vcc
     }
@@ -146,6 +151,7 @@ void tempratureRead() {
       errorStatus |= B00000100; // Open Circuit
     }
   } else {
+    errorStatus = 0;
     if ((thermocouple & 0x8000) == 0) {
       temperature = (thermocouple >> 2) * 0.25;
     } else {
@@ -335,9 +341,6 @@ void setup(void) {
   // u8g
   // flip screen, if required
   // u8g.setRot180();
-
-  // set SPI backup if required
-  //u8g.setHardwareBackup(u8g_backup_avr_spi);
 
   // assign default color value
   if ( u8g.getMode() == U8G_MODE_R3G3B2 ) {
